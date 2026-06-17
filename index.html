@@ -9,30 +9,37 @@
 
     <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <div class="container">
 
     <!-- Sidebar -->
+
     <aside class="sidebar">
 
         <div class="logo">
+
             <i class="fas fa-wallet"></i>
+
             <div>
                 <h2>Smart</h2>
                 <h3>Expense Tracker</h3>
             </div>
+
         </div>
 
         <ul class="menu">
+
             <li class="active">
-                <i class="fas fa-home"></i>
+                <i class="fas fa-house"></i>
                 Dashboard
             </li>
 
             <li>
-                <i class="fas fa-file-invoice"></i>
+                <i class="fas fa-file-invoice-dollar"></i>
                 Transactions
             </li>
 
@@ -47,42 +54,52 @@
             </li>
 
             <li>
-                <i class="fas fa-cog"></i>
+                <i class="fas fa-gear"></i>
                 Settings
             </li>
+
         </ul>
 
         <div class="quote-box">
+
+            <h3>💰 Save More</h3>
+
             <p>
                 Track your expenses today
                 for a better tomorrow.
             </p>
+
         </div>
 
     </aside>
 
-    <!-- Main -->
+    <!-- Main Content -->
+
     <main class="main">
 
-        <!-- Top Bar -->
+        <!-- Topbar -->
+
         <div class="topbar">
 
-            <i class="fas fa-bars"></i>
+            <i class="fas fa-bars menu-btn"></i>
 
             <div class="top-right">
 
-                <label>
-                    Dark Mode
-                    <input type="checkbox">
-                </label>
+                <div class="dark-mode">
+                    <i class="fas fa-moon"></i>
+                    <span>Dark Mode</span>
+                </div>
 
-                <i class="fas fa-user-circle"></i>
+                <div class="profile">
+                    <i class="fas fa-user-circle"></i>
+                </div>
 
             </div>
 
         </div>
 
         <!-- Header -->
+
         <div class="header">
 
             <div>
@@ -91,41 +108,75 @@
             </div>
 
             <button id="addBtn">
-                + Add Transaction
+                <i class="fas fa-plus"></i>
+                Add Transaction
             </button>
 
         </div>
 
         <!-- Cards -->
+
         <div class="cards">
 
             <div class="card income">
-                <h3>Total Income</h3>
-                <h2 id="income">₹0</h2>
+
+                <div class="icon">
+                    <i class="fas fa-arrow-trend-up"></i>
+                </div>
+
+                <div>
+                    <h4>Total Income</h4>
+                    <h2 id="income">₹0</h2>
+                </div>
+
             </div>
 
             <div class="card expense">
-                <h3>Total Expense</h3>
-                <h2 id="expense">₹0</h2>
+
+                <div class="icon">
+                    <i class="fas fa-arrow-trend-down"></i>
+                </div>
+
+                <div>
+                    <h4>Total Expense</h4>
+                    <h2 id="expense">₹0</h2>
+                </div>
+
             </div>
 
             <div class="card balance">
-                <h3>Balance</h3>
-                <h2 id="balance">₹0</h2>
+
+                <div class="icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+
+                <div>
+                    <h4>Balance</h4>
+                    <h2 id="balance">₹0</h2>
+                </div>
+
             </div>
 
             <div class="card transaction">
-                <h3>Transactions</h3>
-                <h2 id="count">0</h2>
+
+                <div class="icon">
+                    <i class="fas fa-chart-column"></i>
+                </div>
+
+                <div>
+                    <h4>Transactions</h4>
+                    <h2 id="count">0</h2>
+                </div>
+
             </div>
 
         </div>
 
-        <!-- Content Area -->
+        <!-- Main Content Grid -->
 
         <div class="content">
 
-            <!-- Chart Section -->
+            <!-- Expense Chart -->
 
             <div class="chart-section">
 
@@ -133,13 +184,18 @@
 
                 <canvas id="expenseChart"></canvas>
 
+                <div class="expense-total">
+                    <span>Total Expenses</span>
+                    <h3 id="expenseTotal">₹0</h3>
+                </div>
+
             </div>
 
             <!-- Transactions -->
 
             <div class="transaction-section">
 
-                <div class="title">
+                <div class="section-header">
 
                     <h2>Recent Transactions</h2>
 
@@ -148,6 +204,8 @@
                 </div>
 
                 <ul id="transactionList">
+
+                    <!-- Dynamic Data -->
 
                 </ul>
 
@@ -159,20 +217,48 @@
 
         <div class="budget-box">
 
-            <div>
+            <div class="budget-tip">
 
-                <h2>Budget Tip</h2>
+                <div class="target-icon">
+                    🎯
+                </div>
 
-                <p>
-                    Try to spend less on unnecessary
-                    things and save more.
-                </p>
+                <div>
+                    <h2>Budget Tip</h2>
+
+                    <p>
+                        Try to spend less on unnecessary
+                        things and save more.
+                    </p>
+                </div>
 
             </div>
 
-            <div class="progress">
+            <div class="budget-progress">
 
-                <div class="progress-bar"></div>
+                <div class="budget-header">
+
+                    <span>Monthly Budget</span>
+
+                    <span>
+                        ₹<span id="budgetSpent">0</span> /
+                        ₹30000
+                    </span>
+
+                </div>
+
+                <div class="progress">
+
+                    <div
+                        class="progress-bar"
+                        id="progressBar">
+                    </div>
+
+                </div>
+
+                <div class="percentage">
+                    <span id="percentage">0%</span>
+                </div>
 
             </div>
 
@@ -182,7 +268,60 @@
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Add Transaction Modal -->
+
+<div class="modal" id="transactionModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>Add Transaction</h2>
+
+            <span id="closeModal">&times;</span>
+
+        </div>
+
+        <form id="transactionForm">
+
+            <select id="type" required>
+
+                <option value="">
+                    Select Type
+                </option>
+
+                <option value="income">
+                    Income
+                </option>
+
+                <option value="expense">
+                    Expense
+                </option>
+
+            </select>
+
+            <input
+                type="text"
+                id="description"
+                placeholder="Description"
+                required>
+
+            <input
+                type="number"
+                id="amount"
+                placeholder="Amount"
+                required>
+
+            <button type="submit">
+                Save Transaction
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
 <script src="script.js"></script>
 
 </body>
