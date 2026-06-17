@@ -4,41 +4,117 @@ const balanceEl = document.getElementById("balance");
 const countEl = document.getElementById("count");
 const transactionList = document.getElementById("transactionList");
 
+const expenseTotalEl =
+document.getElementById("expenseTotal");
+
+const budgetSpentEl =
+document.getElementById("budgetSpent");
+
+const percentageEl =
+document.getElementById("percentage");
+
+const progressBar =
+document.getElementById("progressBar");
+
+const modal =
+document.getElementById("transactionModal");
+
+const addBtn =
+document.getElementById("addBtn");
+
+const closeModal =
+document.getElementById("closeModal");
+
+const transactionForm =
+document.getElementById("transactionForm");
+
 let transactions =
-JSON.parse(localStorage.getItem("transactions")) || [];
+JSON.parse(
+localStorage.getItem("transactions")
+) || [];
 
 let chart;
 
-// Add Transaction Button
+// Open Modal
 
-document.getElementById("addBtn").addEventListener("click", () => {
+addBtn.addEventListener("click", () => {
 
-    const type = prompt("Enter Type (income/expense)");
+    modal.style.display = "flex";
 
-    if(!type) return;
+});
 
-    const description = prompt("Description");
+// Close Modal
 
-    if(!description) return;
+closeModal.addEventListener("click", () => {
 
-    const amount = Number(prompt("Amount"));
+    modal.style.display = "none";
 
-    if(!amount) return;
+});
 
-    transactions.push({
+// Close when clicked outside
+
+window.addEventListener("click", (e) => {
+
+    if(e.target === modal){
+
+        modal.style.display = "none";
+
+    }
+
+});
+
+// Add Transaction
+
+transactionForm.addEventListener(
+"submit",
+function(e){
+
+    e.preventDefault();
+
+    const type =
+    document.getElementById("type").value;
+
+    const description =
+    document.getElementById("description").value;
+
+    const amount =
+    Number(
+        document.getElementById("amount").value
+    );
+
+    if(
+        description === "" ||
+        amount <= 0
+    ){
+        alert("Please enter valid data");
+        return;
+    }
+
+    const transaction = {
+
         id: Date.now(),
+
         type,
+
         description,
+
         amount
-    });
+
+    };
+
+    transactions.push(transaction);
 
     saveData();
 
     updateUI();
 
+    transactionForm.reset();
+
+    modal.style.display = "none";
+
 });
 
-// Save Local Storage
+// Save Data
 
 function saveData(){
 
@@ -49,75 +125,156 @@ function saveData(){
 
 }
 
-// Update UI
+// Delete Transaction
+
+function deleteTransaction(id){
+
+    transactions =
+    transactions.filter(item =>
+        item.id !== id
+    );
+
+    saveData();
+
+    updateUI();
+
+}
+
+// Update Dashboard
 
 function updateUI(){
 
     let income = 0;
+
     let expense = 0;
 
     transactionList.innerHTML = "";
 
     transactions.forEach(item => {
 
-        if(item.type.toLowerCase() === "income"){
+        if(item.type === "income"){
+
             income += item.amount;
-        }
-        else{
+
+        }else{
+
             expense += item.amount;
+
         }
 
-        const li = document.createElement("li");
+        const li =
+        document.createElement("li");
 
         li.innerHTML = `
+
             <div class="transaction-info">
+
                 <span class="transaction-name">
                     ${item.description}
                 </span>
 
                 <span class="transaction-date">
                     ${new Date(item.id)
-                        .toLocaleDateString()}
+                    .toLocaleDateString()}
                 </span>
+
             </div>
 
-            <span class="${
-                item.type === "income"
-                ? "amount-income"
-                : "amount-expense"
-            }">
+            <div>
 
-            ${
-                item.type === "income"
-                ? "+"
-                : "-"
-            }₹${item.amount}
+                <span class="${
+                    item.type === "income"
+                    ? "amount-income"
+                    : "amount-expense"
+                }">
 
-            </span>
+                    ${
+                        item.type === "income"
+                        ? "+"
+                        : "-"
+                    } ₹${item.amount}
+
+                </span>
+
+                <button
+                onclick="deleteTransaction(${item.id})"
+                class="delete-btn">
+
+                    ✖
+
+                </button>
+
+            </div>
+
         `;
 
         transactionList.appendChild(li);
 
     });
 
-    incomeEl.textContent = `₹${income}`;
-    expenseEl.textContent = `₹${expense}`;
-    balanceEl.textContent = `₹${income-expense}`;
-    countEl.textContent = transactions.length;
+    const balance =
+    income - expense;
+
+    incomeEl.textContent =
+    `₹${income}`;
+
+    expenseEl.textContent =
+    `₹${expense}`;
+
+    balanceEl.textContent =
+    `₹${balance}`;
+
+    countEl.textContent =
+    transactions.length;
+
+    expenseTotalEl.textContent =
+    `₹${expense}`;
+
+    budgetSpentEl.textContent =
+    expense;
+
+    updateBudget(expense);
 
     createChart(income, expense);
 
 }
 
+// Budget Progress
+
+function updateBudget(expense){
+
+    const budget = 30000;
+
+    const percentage =
+    Math.min(
+        (expense / budget) * 100,
+        100
+    );
+
+    progressBar.style.width =
+    percentage + "%";
+
+    percentageEl.textContent =
+    percentage.toFixed(0) + "%";
+
+}
+
 // Chart
 
-function createChart(income, expense){
+function createChart(
+    income,
+    expense
+){
 
     const ctx =
-    document.getElementById("expenseChart");
+    document.getElementById(
+        "expenseChart"
+    );
 
     if(chart){
+
         chart.destroy();
+
     }
 
     chart = new Chart(ctx, {
@@ -127,28 +284,57 @@ function createChart(income, expense){
         data: {
 
             labels: [
+
                 "Income",
+
                 "Expense"
+
             ],
 
             datasets: [{
 
                 data: [
+
                     income,
+
                     expense
+
                 ],
 
                 backgroundColor: [
+
                     "#2ecc71",
+
                     "#e74c3c"
-                ]
+
+                ],
+
+                borderWidth: 0
 
             }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+
+                    position: "bottom"
+
+                }
+
+            }
 
         }
 
     });
 
 }
+
+// Initial Load
 
 updateUI();
