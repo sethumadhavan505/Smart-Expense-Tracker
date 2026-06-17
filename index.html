@@ -4,34 +4,185 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Expense Tracker</title>
+
     <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
 <div class="container">
 
-    <h1>Smart Expense Tracker</h1>
+    <!-- Sidebar -->
+    <aside class="sidebar">
 
-    <h2>Balance: ₹<span id="balance">0</span></h2>
+        <div class="logo">
+            <i class="fas fa-wallet"></i>
+            <div>
+                <h2>Smart</h2>
+                <h3>Expense Tracker</h3>
+            </div>
+        </div>
 
-    <form id="expenseForm">
+        <ul class="menu">
+            <li class="active">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </li>
 
-        <input type="text" id="description"
-               placeholder="Description" required>
+            <li>
+                <i class="fas fa-file-invoice"></i>
+                Transactions
+            </li>
 
-        <input type="number" id="amount"
-               placeholder="Amount" required>
+            <li>
+                <i class="fas fa-chart-pie"></i>
+                Categories
+            </li>
 
-        <button type="submit">Add Transaction</button>
+            <li>
+                <i class="fas fa-chart-line"></i>
+                Analytics
+            </li>
 
-    </form>
+            <li>
+                <i class="fas fa-cog"></i>
+                Settings
+            </li>
+        </ul>
 
-    <h3>Transaction History</h3>
+        <div class="quote-box">
+            <p>
+                Track your expenses today
+                for a better tomorrow.
+            </p>
+        </div>
 
-    <ul id="transactionList"></ul>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <!-- Top Bar -->
+        <div class="topbar">
+
+            <i class="fas fa-bars"></i>
+
+            <div class="top-right">
+
+                <label>
+                    Dark Mode
+                    <input type="checkbox">
+                </label>
+
+                <i class="fas fa-user-circle"></i>
+
+            </div>
+
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+
+            <div>
+                <h1>Dashboard</h1>
+                <p>Overview of your finances</p>
+            </div>
+
+            <button id="addBtn">
+                + Add Transaction
+            </button>
+
+        </div>
+
+        <!-- Cards -->
+        <div class="cards">
+
+            <div class="card income">
+                <h3>Total Income</h3>
+                <h2 id="income">₹0</h2>
+            </div>
+
+            <div class="card expense">
+                <h3>Total Expense</h3>
+                <h2 id="expense">₹0</h2>
+            </div>
+
+            <div class="card balance">
+                <h3>Balance</h3>
+                <h2 id="balance">₹0</h2>
+            </div>
+
+            <div class="card transaction">
+                <h3>Transactions</h3>
+                <h2 id="count">0</h2>
+            </div>
+
+        </div>
+
+        <!-- Content Area -->
+
+        <div class="content">
+
+            <!-- Chart Section -->
+
+            <div class="chart-section">
+
+                <h2>Expense Overview</h2>
+
+                <canvas id="expenseChart"></canvas>
+
+            </div>
+
+            <!-- Transactions -->
+
+            <div class="transaction-section">
+
+                <div class="title">
+
+                    <h2>Recent Transactions</h2>
+
+                    <a href="#">View All</a>
+
+                </div>
+
+                <ul id="transactionList">
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <!-- Budget Section -->
+
+        <div class="budget-box">
+
+            <div>
+
+                <h2>Budget Tip</h2>
+
+                <p>
+                    Try to spend less on unnecessary
+                    things and save more.
+                </p>
+
+            </div>
+
+            <div class="progress">
+
+                <div class="progress-bar"></div>
+
+            </div>
+
+        </div>
+
+    </main>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="script.js"></script>
 
 </body>
