@@ -1,0 +1,176 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-secondary">Financial Overview</h2>
+    <div>
+      <a
+        href="{% url 'export_report' 'csv' %}"
+        class="btn btn-outline-success btn-sm"
+        >Export CSV</a
+      >
+      <a
+        href="{% url 'export_report' 'pdf' %}"
+        class="btn btn-outline-danger btn-sm"
+        >Export PDF</a
+      >
+    </div>
+  </div>
+
+  <form method="GET" class="mb-4">
+    <input
+      type="text"
+      name="search"
+      class="form-control"
+      placeholder="Search expenses..."
+      value="{{ search_query }}"
+    />
+  </form>
+
+  <div class="alert alert-{{ insight_status }} shadow-sm mb-4">
+    <strong>Smart Insight:</strong> {{ insight_message }}
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3 border-start border-primary border-4">
+        <small class="text-uppercase text-muted fw-bold">TOTAL EXPENSES</small>
+        <h3 class="fw-bold">₹{{ total_amount }}</h3>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3 border-start border-info border-4">
+        <small class="text-uppercase text-muted fw-bold">DAILY AVERAGE</small>
+        <h3 class="fw-bold">₹{{ daily_avg }}</h3>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-primary text-white shadow border-0 p-2">
+        <div class="card-body">
+          <small class="text-uppercase fw-bold opacity-75">Monthly Total</small>
+          <h3 class="fw-bold">₹{{ monthly_total }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-8">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card shadow-sm p-4 border-0 h-100">
+            <h6 class="fw-bold mb-4">Spending by Category</h6>
+            <div style="height: 250px">
+              <canvas id="expenseChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card shadow-sm p-4 border-0 h-100">
+            <h6 class="fw-bold mb-4">
+              <i class="fas fa-chart-line text-info me-2"></i>Monthly Trend
+            </h6>
+            <div style="height: 250px">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm p-4 border-0 h-100">
+        <h5 class="fw-bold mb-4">Quick Add</h5>
+        <form method="POST" action="{% url 'add_expense' %}">
+          {% csrf_token %}
+          <input
+            type="text"
+            name="description"
+            class="form-control mb-2"
+            placeholder="Description"
+            required
+          />
+          <input
+            type="number"
+            name="amount"
+            class="form-control mb-2"
+            placeholder="Amount (₹)"
+            required
+          />
+          <input type="date" name="date" class="form-control mb-3" required />
+          <button type="submit" class="btn btn-primary w-100">
+            Log Expense
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm p-4 border-0">
+    <h5 class="mb-4 text-secondary fw-bold">Recent Transactions</h5>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for expense in expenses %}
+          <tr>
+            <td>{{ expense.date|date:"d M Y" }}</td>
+            <td>{{ expense.description }}</td>
+            <td>
+              <span class="badge rounded-pill bg-info text-dark"
+                >{{ expense.category }}</span
+              >
+            </td>
+            <td class="fw-bold">₹{{ expense.amount }}</td>
+            <td>
+              <a
+                href="{% url 'delete_expense' expense.pk %}"
+                class="btn btn-sm btn-outline-danger"
+                onclick="return confirm('Are you sure?');"
+                >Delete</a
+              >
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4">
+              No expenses recorded yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% load static %}
+<script src="{% static 'js/chart_logic.js' %}"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Pie Chart Data
+    const labels = {{ labels|safe }};
+    const values = {{ values|safe }};
+    if (labels.length > 0) {
+        renderExpenseChart(labels, values);
+    }
+
+    // Monthly Trend Data
+    const tLabels = {{ trend_labels|safe }};
+    const tValues = {{ trend_values|safe }};
+    if (tLabels.length > 0) {
+        renderTrendChart(tLabels, tValues);
+    }
+  });
+</script>
+{% endblock %}
