@@ -1,31 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Weather News</title>
-  </head>
-  <body>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-  <div class="container">
-    <!-- Header Section -->
-    <header>
-      <h1>Weather News</h1>
-      <div class="search-box">
-        <input type="text" id="city" placeholder="Enter City Name" />
-        <button onclick="getWeather()">Get Weather</button>
-      </div>
-    </header>
+<div class="container">
 
-    <!-- Weather Result Section -->
-    <div id="weather-result" class="weather-result">
-      <!-- Data will be dynamically loaded here -->
-    </div>
+    <h1>Smart Expense Tracker</h1>
 
-    <!-- Error Message Section -->
-    <div id="error-message" class="error-message"></div>
-  </div>
-<script src="app.js"></script>
-  
-    </body>
+    <h2>Balance: ₹<span id="balance">0</span></h2>
+
+    <form id="expenseForm">
+
+        <input type="text" id="description"
+               placeholder="Description" required>
+
+        <input type="number" id="amount"
+               placeholder="Amount" required>
+
+        <button type="submit">Add Transaction</button>
+
+    </form>
+
+    <h3>Transaction History</h3>
+
+    <ul id="transactionList"></ul>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
 </html>
