@@ -17,9 +17,9 @@
             <nav class="sidebar-nav">
                 <a href="#" id="navDashboard" class="nav-item active"><i class="fa-solid fa-house"></i> Dashboard</a>
                 <a href="#" id="navTransactions" class="nav-item"><i class="fa-solid fa-list"></i> Transactions</a>
-                <a href="#" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Categories</a>
-                <a href="#" class="nav-item"><i class="fa-solid fa-chart-simple"></i> Analytics</a>
-                <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
+                <a href="#" id="navCategories" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Categories</a>
+                <a href="#" id="navAnalytics" class="nav-item"><i class="fa-solid fa-chart-simple"></i> Analytics</a>
+                <a href="#" id="navSettings" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
             </nav>
 
             <div class="promo-card">
@@ -30,7 +30,9 @@
                 </div>
             </div>
         </aside>
+        
         <div id="sidebarOverlay" class="sidebar-overlay"></div>
+        
         <main class="main-content">
             <header class="top-header">
                 <div class="header-titles-wrapper" style="display: flex; align-items: center; gap: 16px;">
@@ -139,13 +141,64 @@
                     </div>
                 </div>
 
-            </div> <div id="transactionsView" class="dashboard-grid" style="display: none;">
+            </div> 
+
+            <div id="transactionsView" class="dashboard-grid" style="display: none;">
                 <div class="card transactions-card" style="width: 100%; min-height: 500px;">
                     <div class="card-header">
                         <h3>All Transactions History</h3>
                     </div>
                     <div class="transaction-list" id="allTransactionsList">
+                    </div>
+                </div>
+            </div>
+
+            <div id="categoriesView" class="dashboard-grid" style="display: none;">
+                <div class="card transactions-card" style="width: 100%; min-height: 500px;">
+                    <div class="card-header">
+                        <h3>Spending by Category</h3>
+                    </div>
+                    <div id="categoryBreakdownList" style="padding: 24px;">
                         </div>
+                </div>
+            </div>
+
+            <div id="analyticsView" class="dashboard-grid" style="display: none;">
+                <div class="card" style="width: 100%; min-height: 500px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <i class="fa-solid fa-person-digging" style="font-size: 48px; color: var(--text-muted); margin-bottom: 16px;"></i>
+                    <h3 style="color: var(--text-muted);">Advanced Analytics</h3>
+                    <p style="color: var(--text-muted);">This feature is coming in a future update.</p>
+                </div>
+            </div>
+
+            <div id="settingsView" class="dashboard-grid" style="display: none;">
+                <div class="card" style="max-width: 600px; width: 100%;">
+                    <div class="card-header">
+                        <h3>Application Preferences</h3>
+                    </div>
+                    <form style="padding: 24px;">
+                        <div class="form-group">
+                            <label>Monthly Budget Target (₹)</label>
+                            <input type="number" value="30000">
+                        </div>
+                        <div class="form-group">
+                            <label>Preferred Currency</label>
+                            <select>
+                                <option>₹ Indian Rupee (INR)</option>
+                                <option>$ US Dollar (USD)</option>
+                                <option>€ Euro (EUR)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Theme Preference</label>
+                            <select>
+                                <option>Match System</option>
+                                <option>Always Light</option>
+                                <option>Always Dark</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn-submit-form" onclick="alert('Settings saved successfully!')">Save Preferences</button>
+                    </form>
                 </div>
             </div>
 
