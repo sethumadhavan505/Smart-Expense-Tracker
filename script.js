@@ -1,15 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // --- Local Storage Initialization ---
-    const defaultData = [
-        { id: 1, title: 'Lunch', category: 'Food', amount: 250, type: 'expense', date: '24 May, 2024' },
-        { id: 2, title: 'Bus Ticket', category: 'Transport', amount: 80, type: 'expense', date: '24 May, 2024' },
-        { id: 3, title: 'Salary', category: 'Income', amount: 45000, type: 'income', date: '01 May, 2024' },
-        { id: 4, title: 'Shopping', category: 'Shopping', amount: 1250, type: 'expense', date: '22 May, 2024' }
-    ];
-
-    // Load from LocalStorage or use default
-    let transactions = JSON.parse(localStorage.getItem('smartTrackerData')) || defaultData;
+    // Load saved data from LocalStorage, or start with a completely empty tracker
+    let transactions = JSON.parse(localStorage.getItem('smartTrackerData')) || [];
     let expenseChartInstance = null;
 
     // --- DOM Elements ---
@@ -22,7 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalIncomeEl = document.querySelectorAll('.summary-card h3')[0];
     const totalExpenseEl = document.querySelectorAll('.summary-card h3')[1];
     const balanceEl = document.querySelectorAll('.summary-card h3')[2];
-    // ... your existing DOM elements ...
+    
+    // Budget DOM Elements
+    const budgetAmountText = document.getElementById('budgetAmountText');
+    const budgetProgressFill = document.getElementById('budgetProgressFill');
+    const budgetProgressText = document.getElementById('budgetProgressText');
+
     const txCountEl = document.querySelectorAll('.summary-card h3')[3];
     const chartTotalExpenseEl = document.querySelector('.total-expenses-footer strong');
     
@@ -127,6 +125,24 @@ document.addEventListener('DOMContentLoaded', function() {
         balanceEl.innerText = `₹${balance.toLocaleString('en-IN')}`;
         txCountEl.innerText = transactions.length;
         chartTotalExpenseEl.innerText = `₹${expense.toLocaleString('en-IN')}`;
+
+        // --- NEW BUDGET LOGIC ---
+        const monthlyBudget = 30000; // Your set budget
+        let spentPercentage = (expense / monthlyBudget) * 100;
+        
+        // Cap the progress bar at 100% so it doesn't break out of the box if you overspend
+        if (spentPercentage > 100) spentPercentage = 100;
+        
+        // Update the HTML elements dynamically
+        if(budgetAmountText) {
+            budgetAmountText.innerText = `₹${expense.toLocaleString('en-IN')} / ₹${monthlyBudget.toLocaleString('en-IN')}`;
+        }
+        if(budgetProgressFill) {
+            budgetProgressFill.style.width = `${Math.round(spentPercentage)}%`;
+        }
+        if(budgetProgressText) {
+            budgetProgressText.innerText = `${Math.round(spentPercentage)}%`;
+        }
     }
 
     function renderTransactionList() {
