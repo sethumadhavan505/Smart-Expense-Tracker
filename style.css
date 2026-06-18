@@ -375,3 +375,82 @@ body {
     transition: 0.2s;
 }
 .btn-submit-form:hover { background-color: #16a34a; }
+/* --- New Clear Button Styles --- */
+.btn-clear {
+    background-color: #f1f5f9;
+    color: var(--text-muted);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px; /* Pill shape matches the toggle */
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+}
+
+.btn-clear:hover {
+    background-color: #fee2e2;
+    color: var(--red);
+}
+
+/* --- Dark Mode Theme Variables & Overrides --- */
+body.dark-theme {
+    --bg-main: #0f172a;
+    --white: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --bg-sidebar: #020617;
+}
+
+body.dark-theme .card,
+body.dark-theme .top-header,
+body.dark-theme .modal-content {
+    background-color: var(--white);
+    border-color: var(--border-color);
+    box-shadow: none;
+}
+
+/* Fix text colors in dark mode */
+body.dark-theme .header-titles h2,
+body.dark-theme .summary-card h3,
+body.dark-theme .chart-card h3,
+body.dark-theme .transactions-card h3,
+body.dark-theme .t-left h4,
+body.dark-theme .tip-left h4,
+body.dark-theme .progress-percent,
+body.dark-theme .modal-header h2 {
+    color: #f8fafc;
+}
+
+body.dark-theme .summary-card .label,
+body.dark-theme .budget-labels,
+body.dark-theme .form-group label {
+    color: #cbd5e1;
+}
+
+/* Fix specific background boxes in dark mode */
+body.dark-theme .budget-tip,
+body.dark-theme .total-expenses-footer {
+    background-color: #0f172a;
+    border-color: #334155;
+}
+
+body.dark-theme .transaction-item {
+    border-bottom-color: #334155;
+}
+
+/* Form inputs in dark mode */
+body.dark-theme input, 
+body.dark-theme select {
+    background-color: #0f172a;
+    color: #f8fafc;
+    border-color: #334155;
+}
+
+/* Clear button dark mode hover */
+body.dark-theme .btn-clear { background-color: #334155; color: #cbd5e1; }
+body.dark-theme .btn-clear:hover { background-color: #7f1d1d; color: #fca5a5; }
