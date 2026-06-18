@@ -30,13 +30,19 @@
                 </div>
             </div>
         </aside>
-
+        <div id="sidebarOverlay" class="sidebar-overlay"></div>
         <main class="main-content">
             <header class="top-header">
-                <div class="header-titles">
-                    <h2>Dashboard</h2>
-                    <p>Overview of your finances</p>
+                <div class="header-titles-wrapper" style="display: flex; align-items: center; gap: 16px;">
+                    <button id="menuToggle" class="menu-toggle">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="header-titles">
+                        <h2>Dashboard</h2>
+                        <p>Overview of your finances</p>
+                    </div>
                 </div>
+                
                 <div class="header-actions">
                     <button id="openModalBtn" class="btn-add"><i class="fa-solid fa-plus"></i> Add Transaction</button>
                     
