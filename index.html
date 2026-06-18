@@ -1,4 +1,139 @@
-<div id="transactionModal" class="modal-overlay">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Expense Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="logo.png" alt="Smart Expense Tracker Logo" class="main-logo">
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-list"></i> Transactions</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Categories</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-chart-simple"></i> Analytics</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+
+            <div class="promo-card">
+                <p>Track your expenses today for a better tomorrow.</p>
+                <div class="promo-illustration">
+                    <i class="fa-solid fa-coins"></i>
+                    <i class="fa-solid fa-seedling"></i>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-titles">
+                    <h2>Dashboard</h2>
+                    <p>Overview of your finances</p>
+                </div>
+                <div class="header-actions">
+                    <button id="openModalBtn" class="btn-add"><i class="fa-solid fa-plus"></i> Add Transaction</button>
+                    <div class="dark-mode-toggle">
+                        <i class="fa-solid fa-moon"></i> Dark Mode
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="profile-icon"><i class="fa-regular fa-user"></i></div>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                
+                <div class="summary-cards">
+                    <div class="card summary-card">
+                        <div class="icon-box bg-green-light"><i class="fa-solid fa-arrow-trend-up text-green"></i></div>
+                        <div class="card-info">
+                            <p class="label">Total Income</p>
+                            <h3>₹0</h3>
+                            <p class="sub-label">This Month</p>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="icon-box bg-red-light"><i class="fa-solid fa-arrow-trend-down text-red"></i></div>
+                        <div class="card-info">
+                            <p class="label">Total Expense</p>
+                            <h3>₹0</h3>
+                            <p class="sub-label">This Month</p>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="icon-box bg-blue-light"><i class="fa-solid fa-wallet text-blue"></i></div>
+                        <div class="card-info">
+                            <p class="label">Balance</p>
+                            <h3>₹0</h3>
+                            <p class="sub-label">This Month</p>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="icon-box bg-yellow-light"><i class="fa-solid fa-chart-bar text-yellow"></i></div>
+                        <div class="card-info">
+                            <p class="label">Transactions</p>
+                            <h3>0</h3>
+                            <p class="sub-label">This Month</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-and-lists">
+                    <div class="card chart-card">
+                        <h3>Expense Overview</h3>
+                        <div class="chart-container">
+                            <canvas id="expenseChart"></canvas>
+                        </div>
+                        <div class="total-expenses-footer">
+                            <span>Total Expenses</span>
+                            <strong>₹0</strong>
+                        </div>
+                    </div>
+
+                    <div class="card transactions-card">
+                        <div class="card-header">
+                            <h3>Recent Transactions</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="transaction-list">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="card budget-tip">
+                    <div class="tip-left">
+                        <div class="icon-box bg-green" style="color: white; font-size: 20px;"><i class="fa-solid fa-bullseye"></i></div>
+                        <div>
+                            <h4>Budget Tip</h4>
+                            <p>Try to spend less on unnecessary things and save more!</p>
+                        </div>
+                    </div>
+                    <div class="tip-right">
+                        <div class="budget-labels">
+                            <span>Monthly Budget</span>
+                            <span>₹18,750 / ₹30,000</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 62%;"></div>
+                        </div>
+                        <span class="progress-percent">62%</span>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="transactionModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Add New Transaction</h2>
@@ -35,3 +170,8 @@
             </form>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
