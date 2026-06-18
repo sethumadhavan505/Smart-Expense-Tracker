@@ -469,3 +469,82 @@ body.dark-theme .btn-clear:hover { background-color: #7f1d1d; color: #fca5a5; }
     object-fit: contain; /* Keeps the image from stretching */
     border-radius: 50%;  /* Keeps the circular shape neat */
 }
+/* --- Mobile Hamburger Menu & Overlay --- */
+.menu-toggle {
+    display: none; /* Hidden on desktop */
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #0f172a;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+body.dark-theme .menu-toggle { color: #f8fafc; }
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(15, 23, 42, 0.6);
+    z-index: 40;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.show {
+    display: block;
+    opacity: 1;
+}
+
+/* --- Responsive Breakpoints --- */
+
+/* Tablets & Small Laptops */
+@media (max-width: 1024px) {
+    .summary-cards { grid-template-columns: repeat(2, 1fr); }
+    .charts-and-lists { grid-template-columns: 1fr; }
+}
+
+/* Mobile Phones */
+@media (max-width: 768px) {
+    .menu-toggle { display: block; }
+    
+    /* Turn Sidebar into a sliding drawer */
+    .sidebar {
+        position: fixed;
+        left: -300px; /* Hidden off-screen */
+        top: 0;
+        bottom: 0;
+        z-index: 50;
+        transition: left 0.3s ease;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar.open { left: 0; /* Slides in */ }
+    
+    /* Adjust header for mobile */
+    .top-header { 
+        padding: 20px; 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 20px; 
+    }
+    .header-actions { 
+        width: 100%; 
+        justify-content: space-between; 
+    }
+    
+    /* Adjust grid and padding */
+    .dashboard-grid { padding: 20px; }
+    .summary-cards { grid-template-columns: 1fr; }
+    
+    /* Fix budget tip stacking */
+    .budget-tip { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .tip-right { width: 100%; }
+}
+
+/* Very Small Phones */
+@media (max-width: 480px) {
+    .header-actions { flex-wrap: wrap; gap: 16px; }
+    .btn-add { width: 100%; justify-content: center; }
+}
