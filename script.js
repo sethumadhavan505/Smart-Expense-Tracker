@@ -22,8 +22,49 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalIncomeEl = document.querySelectorAll('.summary-card h3')[0];
     const totalExpenseEl = document.querySelectorAll('.summary-card h3')[1];
     const balanceEl = document.querySelectorAll('.summary-card h3')[2];
+    // ... your existing DOM elements ...
     const txCountEl = document.querySelectorAll('.summary-card h3')[3];
     const chartTotalExpenseEl = document.querySelector('.total-expenses-footer strong');
+    
+    // NEW DOM Elements for Dark Mode and Clear
+    const darkModeToggle = document.getElementById('darkModeCheckbox');
+    const clearDataBtn = document.getElementById('clearDataBtn');
+
+    // --- Dark Mode Logic ---
+    // Check local storage to see if they left dark mode on previously
+    if (localStorage.getItem('smartTrackerTheme') === 'dark') {
+        document.body.classList.add('dark-theme');
+        if(darkModeToggle) darkModeToggle.checked = true;
+    }
+
+    if(darkModeToggle) {
+        darkModeToggle.addEventListener('change', () => {
+            if (darkModeToggle.checked) {
+                document.body.classList.add('dark-theme');
+                localStorage.setItem('smartTrackerTheme', 'dark');
+            } else {
+                document.body.classList.remove('dark-theme');
+                localStorage.setItem('smartTrackerTheme', 'light');
+            }
+        });
+    }
+
+    // --- Clear Data Logic ---
+    if(clearDataBtn) {
+        clearDataBtn.addEventListener('click', () => {
+            // Add a confirmation popup so the user doesn't delete by accident
+            const confirmDelete = confirm("Are you sure you want to clear all data? This cannot be undone.");
+            
+            if (confirmDelete) {
+                // Empty the array
+                transactions = []; 
+                // Remove from LocalStorage
+                localStorage.removeItem('smartTrackerData'); 
+                // Re-render the empty dashboard
+                updateDashboard(); 
+            }
+        });
+    }
 
     // --- Initialization ---
     initDashboard();
