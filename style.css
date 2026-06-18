@@ -462,3 +462,10 @@ body.dark-theme select {
 /* Clear button dark mode hover */
 body.dark-theme .btn-clear { background-color: #334155; color: #cbd5e1; }
 body.dark-theme .btn-clear:hover { background-color: #7f1d1d; color: #fca5a5; }
+/* Custom size for the Budget Tip image */
+.budget-icon {
+    width: 56px;
+    height: 56px;
+    object-fit: contain; /* Keeps the image from stretching */
+    border-radius: 50%;  /* Keeps the circular shape neat */
+}
