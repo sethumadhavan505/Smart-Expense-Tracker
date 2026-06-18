@@ -51,14 +51,20 @@ body {
     justify-content: center; 
     align-items: center;
     margin-bottom: 40px;
-    width: 100%; 
+    
+    /* These negative margins pull the logo out past the sidebar's padding */
+    margin-left: -24px;
+    margin-right: -24px;
+    
+    /* Calculate the width to account for the pulled margins (100% + 24px left + 24px right) */
+    width: calc(100% + 48px); 
 }
 
 .main-logo {
     width: 100%;         
-    max-width: 240px;    /* Increased this limit significantly to let it grow! */
+    max-width: none;     /* Removed the limit so it can stretch fully */
     height: auto;        
-    object-fit: contain;
+    display: block;
     mix-blend-mode: screen; 
 }
 
