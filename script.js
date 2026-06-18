@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // --- Local Storage Initialization ---
-    // Load saved data from LocalStorage, or start with a completely empty tracker
     let transactions = JSON.parse(localStorage.getItem('smartTrackerData')) || [];
     let expenseChartInstance = null;
 
@@ -24,12 +23,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const txCountEl = document.querySelectorAll('.summary-card h3')[3];
     const chartTotalExpenseEl = document.querySelector('.total-expenses-footer strong');
     
-    // NEW DOM Elements for Dark Mode and Clear
     const darkModeToggle = document.getElementById('darkModeCheckbox');
     const clearDataBtn = document.getElementById('clearDataBtn');
 
+    // NEW DOM Elements for View Switching
+    const dashboardView = document.getElementById('dashboardView');
+    const transactionsView = document.getElementById('transactionsView');
+    const navDashboard = document.getElementById('navDashboard');
+    const navTransactions = document.getElementById('navTransactions');
+    const viewAllBtn = document.getElementById('viewAllBtn');
+    const allTransactionsListEl = document.getElementById('allTransactionsList');
+    const headerTitle = document.querySelector('.header-titles h2');
+    const headerSubtitle = document.querySelector('.header-titles p');
+
     // --- Dark Mode Logic ---
-    // Check local storage to see if they left dark mode on previously
     if (localStorage.getItem('smartTrackerTheme') === 'dark') {
         document.body.classList.add('dark-theme');
         if(darkModeToggle) darkModeToggle.checked = true;
@@ -47,18 +54,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // --- View Switching Logic ---
+    function switchView(view) {
+        if (view === 'dashboard') {
+            dashboardView.style.display = 'flex';
+            transactionsView.style.display = 'none';
+            navDashboard.classList.add('active');
+            navTransactions.classList.remove('active');
+            headerTitle.innerText = 'Dashboard';
+            headerSubtitle.innerText = 'Overview of your finances';
+        } else if (view === 'transactions') {
+            dashboardView.style.display = 'none';
+            transactionsView.style.display = 'flex';
+            navDashboard.classList.remove('active');
+            navTransactions.classList.add('active');
+            headerTitle.innerText = 'All Transactions';
+            headerSubtitle.innerText = 'Complete history of your income and expenses';
+            renderAllTransactions(); // Generate the full list
+        }
+    }
+
+    if(navDashboard) navDashboard.addEventListener('click', (e) => { e.preventDefault(); switchView('dashboard'); });
+    if(navTransactions) navTransactions.addEventListener('click', (e) => { e.preventDefault(); switchView('transactions'); });
+    if(viewAllBtn) viewAllBtn.addEventListener('click', (e) => { e.preventDefault(); switchView('transactions'); });
+
     // --- Clear Data Logic ---
     if(clearDataBtn) {
         clearDataBtn.addEventListener('click', () => {
-            // Add a confirmation popup so the user doesn't delete by accident
             const confirmDelete = confirm("Are you sure you want to clear all data? This cannot be undone.");
-            
             if (confirmDelete) {
-                // Empty the array
                 transactions = []; 
-                // Remove from LocalStorage
                 localStorage.removeItem('smartTrackerData'); 
-                // Re-render the empty dashboard
                 updateDashboard(); 
             }
         });
@@ -89,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             transactions.unshift(newTx); // Add to top
             
-            // Save to Local Storage
             localStorage.setItem('smartTrackerData', JSON.stringify(transactions));
 
             updateDashboard();
@@ -107,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateDashboard() {
         calculateSummaries();
         renderTransactionList();
+        renderAllTransactions(); // Update the full view list as well
         updateChartData();
     }
 
@@ -127,13 +153,11 @@ document.addEventListener('DOMContentLoaded', function() {
         chartTotalExpenseEl.innerText = `₹${expense.toLocaleString('en-IN')}`;
 
         // --- NEW BUDGET LOGIC ---
-        const monthlyBudget = 30000; // Your set budget
+        const monthlyBudget = 30000; 
         let spentPercentage = (expense / monthlyBudget) * 100;
         
-        // Cap the progress bar at 100% so it doesn't break out of the box if you overspend
         if (spentPercentage > 100) spentPercentage = 100;
         
-        // Update the HTML elements dynamically
         if(budgetAmountText) {
             budgetAmountText.innerText = `₹${expense.toLocaleString('en-IN')} / ₹${monthlyBudget.toLocaleString('en-IN')}`;
         }
@@ -145,9 +169,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Renders only the top 5 for the Dashboard
     function renderTransactionList() {
+        if(!transactionListEl) return;
         transactionListEl.innerHTML = ''; 
-        const recentTx = transactions.slice(0, 5); // Show top 5
+        const recentTx = transactions.slice(0, 5); 
 
         recentTx.forEach(tx => {
             const isIncome = tx.type === 'income';
@@ -178,6 +204,48 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             transactionListEl.insertAdjacentHTML('beforeend', txHTML);
+        });
+    }
+
+    // Renders ALL transactions for the new view page
+    function renderAllTransactions() {
+        if(!allTransactionsListEl) return;
+        allTransactionsListEl.innerHTML = ''; 
+
+        if(transactions.length === 0) {
+            allTransactionsListEl.innerHTML = '<p style="text-align:center; padding:20px; color:#64748b;">No transactions recorded yet.</p>';
+            return;
+        }
+
+        transactions.forEach(tx => {
+            const isIncome = tx.type === 'income';
+            const sign = isIncome ? '+' : '-';
+            const colorClass = isIncome ? 'text-green' : 'text-red';
+            
+            let iconClass = 'fa-solid fa-receipt'; let bgClass = 'bg-yellow-light'; let iconColor = 'text-yellow';
+
+            if(tx.category === 'Food') { iconClass = 'fa-solid fa-utensils'; bgClass = 'bg-green-light'; iconColor = 'text-green'; }
+            if(tx.category === 'Transport') { iconClass = 'fa-solid fa-bus'; bgClass = 'bg-blue-light'; iconColor = 'text-blue'; }
+            if(tx.category === 'Income') { iconClass = 'fa-solid fa-briefcase'; bgClass = 'bg-green-light'; iconColor = 'text-green'; }
+            if(tx.category === 'Shopping') { iconClass = 'fa-solid fa-bag-shopping'; bgClass = 'bg-yellow-light'; iconColor = 'text-yellow'; }
+            if(tx.category === 'Entertainment') { iconClass = 'fa-solid fa-film'; bgClass = 'bg-red-light'; iconColor = 'text-red'; }
+
+            const txHTML = `
+                <div class="transaction-item">
+                    <div class="t-left">
+                        <div class="t-icon ${bgClass}"><i class="${iconClass} ${iconColor}"></i></div>
+                        <div>
+                            <h4>${tx.title}</h4>
+                            <p>${tx.category}</p>
+                        </div>
+                    </div>
+                    <div class="t-right ${colorClass}">
+                        <h4>${sign} ₹${tx.amount.toLocaleString('en-IN')}</h4>
+                        <p>${tx.date}</p>
+                    </div>
+                </div>
+            `;
+            allTransactionsListEl.insertAdjacentHTML('beforeend', txHTML);
         });
     }
 
