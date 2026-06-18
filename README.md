@@ -44,8 +44,7 @@ git clone https://github.com/sethumadhavan505/Smart-Expense-Tracker.git
 3. Run `index.html` in your browser.
 
 ## 📸 Screenshots
-
-Add screenshots of your project here after completion.
+<img width="1536" height="1024" alt="screenshot" src="https://github.com/user-attachments/assets/110c63db-7f6f-4d45-8c28-4121a3da30db" />
 
 ## 🎯 Learning Outcomes
 
