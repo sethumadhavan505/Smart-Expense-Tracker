@@ -15,8 +15,8 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i> Dashboard</a>
-                <a href="#" class="nav-item"><i class="fa-solid fa-list"></i> Transactions</a>
+                <a href="#" id="navDashboard" class="nav-item active"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a href="#" id="navTransactions" class="nav-item"><i class="fa-solid fa-list"></i> Transactions</a>
                 <a href="#" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Categories</a>
                 <a href="#" class="nav-item"><i class="fa-solid fa-chart-simple"></i> Analytics</a>
                 <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
@@ -38,23 +38,23 @@
                     <p>Overview of your finances</p>
                 </div>
                 <div class="header-actions">
-    <button id="openModalBtn" class="btn-add"><i class="fa-solid fa-plus"></i> Add Transaction</button>
-    
-    <div class="dark-mode-toggle">
-        <i class="fa-solid fa-moon"></i> Dark Mode
-        <label class="switch">
-            <input type="checkbox" id="darkModeCheckbox">
-            <span class="slider round"></span>
-        </label>
-    </div>
-    
-    <button id="clearDataBtn" class="btn-clear">
-        <i class="fa-solid fa-trash-can"></i> Clear
-    </button>
-</div>
+                    <button id="openModalBtn" class="btn-add"><i class="fa-solid fa-plus"></i> Add Transaction</button>
+                    
+                    <div class="dark-mode-toggle">
+                        <i class="fa-solid fa-moon"></i> Dark Mode
+                        <label class="switch">
+                            <input type="checkbox" id="darkModeCheckbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    
+                    <button id="clearDataBtn" class="btn-clear">
+                        <i class="fa-solid fa-trash-can"></i> Clear
+                    </button>
+                </div>
             </header>
 
-            <div class="dashboard-grid">
+            <div id="dashboardView" class="dashboard-grid">
                 
                 <div class="summary-cards">
                     <div class="card summary-card">
@@ -106,10 +106,10 @@
                     <div class="card transactions-card">
                         <div class="card-header">
                             <h3>Recent Transactions</h3>
-                            <a href="#" class="view-all">View All</a>
+                            <a href="#" id="viewAllBtn" class="view-all">View All</a>
                         </div>
                         <div class="transaction-list">
-                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -133,7 +133,16 @@
                     </div>
                 </div>
 
+            </div> <div id="transactionsView" class="dashboard-grid" style="display: none;">
+                <div class="card transactions-card" style="width: 100%; min-height: 500px;">
+                    <div class="card-header">
+                        <h3>All Transactions History</h3>
+                    </div>
+                    <div class="transaction-list" id="allTransactionsList">
+                        </div>
+                </div>
             </div>
+
         </main>
     </div>
 
