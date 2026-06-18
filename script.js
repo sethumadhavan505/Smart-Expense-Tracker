@@ -1,16 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    // --- State: Starting Data (Matches your mockup) ---
-    let transactions = [
+    // --- Local Storage Initialization ---
+    // Try to get data from local storage, otherwise use default mockup data
+    const defaultData = [
         { id: 1, title: 'Lunch', category: 'Food', amount: 250, type: 'expense', date: '24 May, 2024' },
         { id: 2, title: 'Bus Ticket', category: 'Transport', amount: 80, type: 'expense', date: '24 May, 2024' },
         { id: 3, title: 'Salary', category: 'Income', amount: 45000, type: 'income', date: '01 May, 2024' },
         { id: 4, title: 'Shopping', category: 'Shopping', amount: 1250, type: 'expense', date: '22 May, 2024' }
     ];
 
-    let categoryTotals = { Food: 6562, Transport: 4688, Shopping: 3750, Entertainment: 2250, Others: 1500 };
-    
-    // Chart Instance
+    let transactions = JSON.parse(localStorage.getItem('smartTrackerData')) || defaultData;
     let expenseChartInstance = null;
 
     // --- DOM Elements ---
@@ -20,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('transactionForm');
     const transactionListEl = document.querySelector('.transaction-list');
     
-    // Summary DOM Elements
     const totalIncomeEl = document.querySelectorAll('.summary-card h3')[0];
     const totalExpenseEl = document.querySelectorAll('.summary-card h3')[1];
     const balanceEl = document.querySelectorAll('.summary-card h3')[2];
@@ -31,57 +29,37 @@ document.addEventListener('DOMContentLoaded', function() {
     initDashboard();
 
     // --- Event Listeners ---
-    openBtn.addEventListener('click', () => modal.style.display = 'flex');
-    closeBtn.addEventListener('click', () => modal.style.display = 'none');
-    
-    // Close modal if clicked outside
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-    });
+    if(openBtn) openBtn.addEventListener('click', () => modal.style.display = 'flex');
+    if(closeBtn) closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
     // Handle Form Submit
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Get input values
-        const title = document.getElementById('titleInput').value;
-        const amount = parseFloat(document.getElementById('amountInput').value);
-        const type = document.getElementById('typeInput').value;
-        const category = document.getElementById('categoryInput').value;
-        
-        // Get today's date formatted
-        const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
-        const formattedDate = new Date().toLocaleDateString('en-GB', dateOptions);
+    if(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('titleInput').value;
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            const type = document.getElementById('typeInput').value;
+            const category = document.getElementById('categoryInput').value;
+            
+            const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+            const formattedDate = new Date().toLocaleDateString('en-GB', dateOptions);
 
-        // Create new transaction object
-        const newTx = {
-            id: Date.now(), // unique ID
-            title: title,
-            category: category,
-            amount: amount,
-            type: type,
-            date: formattedDate
-        };
+            const newTx = { id: Date.now(), title, category, amount, type, date: formattedDate };
 
-        // Update State
-        transactions.unshift(newTx); // Add to beginning of array
-        
-        if(type === 'expense') {
-            // Add to existing category total, or create it if missing
-            categoryTotals[category] = (categoryTotals[category] || 0) + amount;
-        }
+            transactions.unshift(newTx); 
+            
+            // Save to Local Storage
+            localStorage.setItem('smartTrackerData', JSON.stringify(transactions));
 
-        // Re-render UI
-        updateDashboard();
-        
-        // Reset form and close modal
-        form.reset();
-        modal.style.display = 'none';
-    });
-
+            updateDashboard();
+            form.reset();
+            modal.style.display = 'none';
+        });
+    }
 
     // --- Core Functions ---
-
     function initDashboard() {
         renderChart();
         updateDashboard();
@@ -94,8 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function calculateSummaries() {
-        let income = 0;
-        let expense = 0;
+        let income = 0; let expense = 0;
 
         transactions.forEach(tx => {
             if (tx.type === 'income') income += tx.amount;
@@ -104,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const balance = income - expense;
 
-        // Update DOM (formatting as Indian Rupees)
         totalIncomeEl.innerText = `₹${income.toLocaleString('en-IN')}`;
         totalExpenseEl.innerText = `₹${expense.toLocaleString('en-IN')}`;
         balanceEl.innerText = `₹${balance.toLocaleString('en-IN')}`;
@@ -113,21 +89,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderTransactionList() {
-        transactionListEl.innerHTML = ''; // Clear current list
-
-        // Only show latest 5 to keep dashboard clean
+        transactionListEl.innerHTML = ''; 
         const recentTx = transactions.slice(0, 5); 
 
         recentTx.forEach(tx => {
-            // Determine styles based on type
             const isIncome = tx.type === 'income';
             const sign = isIncome ? '+' : '-';
             const colorClass = isIncome ? 'text-green' : 'text-red';
             
-            // Map categories to FontAwesome icons
-            let iconClass = 'fa-solid fa-receipt'; // Default
-            let bgClass = 'bg-yellow-light';
-            let iconColor = 'text-yellow';
+            let iconClass = 'fa-solid fa-receipt'; let bgClass = 'bg-yellow-light'; let iconColor = 'text-yellow';
 
             if(tx.category === 'Food') { iconClass = 'fa-solid fa-utensils'; bgClass = 'bg-green-light'; iconColor = 'text-green'; }
             if(tx.category === 'Transport') { iconClass = 'fa-solid fa-bus'; bgClass = 'bg-blue-light'; iconColor = 'text-blue'; }
@@ -153,20 +123,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function getCategoryTotals() {
+        let totals = { Food: 0, Transport: 0, Shopping: 0, Entertainment: 0, Others: 0 };
+        transactions.forEach(tx => {
+            if(tx.type === 'expense') {
+                if(totals[tx.category] !== undefined) {
+                    totals[tx.category] += tx.amount;
+                } else {
+                    totals.Others += tx.amount;
+                }
+            }
+        });
+        return totals;
+    }
+
     function renderChart() {
         const ctx = document.getElementById('expenseChart').getContext('2d');
-        
         const config = {
             type: 'doughnut',
             data: getChartData(),
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '70%',
+                cutout: '75%', /* This makes the ring thin like your design */
                 plugins: {
                     legend: {
                         position: 'right',
-                        labels: { usePointStyle: true, padding: 20, font: { family: "'Inter', sans-serif", size: 13 } }
+                        labels: { usePointStyle: true, padding: 25, font: { family: "'Inter', sans-serif", size: 14, weight: '500' } }
                     }
                 }
             }
@@ -182,21 +165,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function getChartData() {
-        // Extract data dynamically from categoryTotals object
+        const totals = getCategoryTotals();
         return {
-            labels: Object.keys(categoryTotals),
+            labels: Object.keys(totals),
             datasets: [{
-                data: Object.values(categoryTotals),
-                backgroundColor: [
-                    '#22c55e', // Green (Food)
-                    '#3b82f6', // Blue (Transport)
-                    '#eab308', // Yellow (Shopping)
-                    '#ef4444', // Red (Entertainment)
-                    '#a855f7', // Purple (Others)
-                    '#fb923c'  // Orange (Fallback)
-                ],
-                borderWidth: 0,
-                hoverOffset: 4
+                data: Object.values(totals),
+                backgroundColor: ['#22c55e', '#3b82f6', '#eab308', '#ef4444', '#a855f7'],
+                borderWidth: 0
             }]
         };
     }
