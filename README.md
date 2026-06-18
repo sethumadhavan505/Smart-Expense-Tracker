@@ -22,13 +22,9 @@ A responsive and user-friendly Expense Tracker built using **HTML, CSS, and Java
 ## 📂 Project Structure
 
 Smart-Expense-Tracker/
-
 ├── index.html
-
 ├── style.css
-
 ├── script.js
-
 └── README.md
 
 ## ⚙️ How to Run the Project
