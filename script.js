@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // --- Local Storage Initialization ---
-    // Try to get data from local storage, otherwise use default mockup data
     const defaultData = [
         { id: 1, title: 'Lunch', category: 'Food', amount: 250, type: 'expense', date: '24 May, 2024' },
         { id: 2, title: 'Bus Ticket', category: 'Transport', amount: 80, type: 'expense', date: '24 May, 2024' },
@@ -9,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 4, title: 'Shopping', category: 'Shopping', amount: 1250, type: 'expense', date: '22 May, 2024' }
     ];
 
+    // Load from LocalStorage or use default
     let transactions = JSON.parse(localStorage.getItem('smartTrackerData')) || defaultData;
     let expenseChartInstance = null;
 
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const newTx = { id: Date.now(), title, category, amount, type, date: formattedDate };
 
-            transactions.unshift(newTx); 
+            transactions.unshift(newTx); // Add to top
             
             // Save to Local Storage
             localStorage.setItem('smartTrackerData', JSON.stringify(transactions));
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderTransactionList() {
         transactionListEl.innerHTML = ''; 
-        const recentTx = transactions.slice(0, 5); 
+        const recentTx = transactions.slice(0, 5); // Show top 5
 
         recentTx.forEach(tx => {
             const isIncome = tx.type === 'income';
@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(tx.category === 'Transport') { iconClass = 'fa-solid fa-bus'; bgClass = 'bg-blue-light'; iconColor = 'text-blue'; }
             if(tx.category === 'Income') { iconClass = 'fa-solid fa-briefcase'; bgClass = 'bg-green-light'; iconColor = 'text-green'; }
             if(tx.category === 'Shopping') { iconClass = 'fa-solid fa-bag-shopping'; bgClass = 'bg-yellow-light'; iconColor = 'text-yellow'; }
+            if(tx.category === 'Entertainment') { iconClass = 'fa-solid fa-film'; bgClass = 'bg-red-light'; iconColor = 'text-red'; }
 
             const txHTML = `
                 <div class="transaction-item">
@@ -145,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '75%', /* This makes the ring thin like your design */
+                cutout: '75%', 
                 plugins: {
                     legend: {
                         position: 'right',
