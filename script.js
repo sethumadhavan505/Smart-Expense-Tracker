@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // --- Local Storage Initialization ---
-    // Load saved data from LocalStorage, or start with a completely empty tracker
     let transactions = JSON.parse(localStorage.getItem('smartTrackerData')) || [];
     let expenseChartInstance = null;
 
@@ -30,10 +29,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // NEW DOM Elements for View Switching
     const dashboardView = document.getElementById('dashboardView');
     const transactionsView = document.getElementById('transactionsView');
+    const categoriesView = document.getElementById('categoriesView');
+    const analyticsView = document.getElementById('analyticsView');
+    const settingsView = document.getElementById('settingsView');
+    
     const navDashboard = document.getElementById('navDashboard');
     const navTransactions = document.getElementById('navTransactions');
+    const navCategories = document.getElementById('navCategories');
+    const navAnalytics = document.getElementById('navAnalytics');
+    const navSettings = document.getElementById('navSettings');
+    
     const viewAllBtn = document.getElementById('viewAllBtn');
     const allTransactionsListEl = document.getElementById('allTransactionsList');
+    const categoryBreakdownListEl = document.getElementById('categoryBreakdownList');
     const headerTitle = document.querySelector('.header-titles h2');
     const headerSubtitle = document.querySelector('.header-titles p');
 
@@ -43,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebarOverlay = document.getElementById('sidebarOverlay');
 
     // --- Dark Mode Logic ---
-    // Check local storage to see if they left dark mode on previously
     if (localStorage.getItem('smartTrackerTheme') === 'dark') {
         document.body.classList.add('dark-theme');
         if(darkModeToggle) darkModeToggle.checked = true;
@@ -63,26 +70,49 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- View Switching Logic ---
     function switchView(view) {
+        // Hide all views
+        const allViews = [dashboardView, transactionsView, categoriesView, analyticsView, settingsView];
+        allViews.forEach(v => { if(v) v.style.display = 'none'; });
+
+        // Remove active class
+        const allNavs = [navDashboard, navTransactions, navCategories, navAnalytics, navSettings];
+        allNavs.forEach(n => { if(n) n.classList.remove('active'); });
+
         if (view === 'dashboard') {
             dashboardView.style.display = 'flex';
-            transactionsView.style.display = 'none';
             navDashboard.classList.add('active');
-            navTransactions.classList.remove('active');
             headerTitle.innerText = 'Dashboard';
             headerSubtitle.innerText = 'Overview of your finances';
         } else if (view === 'transactions') {
-            dashboardView.style.display = 'none';
             transactionsView.style.display = 'flex';
-            navDashboard.classList.remove('active');
             navTransactions.classList.add('active');
             headerTitle.innerText = 'All Transactions';
             headerSubtitle.innerText = 'Complete history of your income and expenses';
-            renderAllTransactions(); // Generate the full list
+            renderAllTransactions();
+        } else if (view === 'categories') {
+            categoriesView.style.display = 'flex';
+            navCategories.classList.add('active');
+            headerTitle.innerText = 'Categories';
+            headerSubtitle.innerText = 'See exactly where your money goes';
+            renderCategoryView(); 
+        } else if (view === 'analytics') {
+            analyticsView.style.display = 'flex';
+            navAnalytics.classList.add('active');
+            headerTitle.innerText = 'Analytics';
+            headerSubtitle.innerText = 'Deep dive into your financial habits';
+        } else if (view === 'settings') {
+            settingsView.style.display = 'flex';
+            navSettings.classList.add('active');
+            headerTitle.innerText = 'Settings';
+            headerSubtitle.innerText = 'Manage your application preferences';
         }
     }
 
     if(navDashboard) navDashboard.addEventListener('click', (e) => { e.preventDefault(); switchView('dashboard'); });
     if(navTransactions) navTransactions.addEventListener('click', (e) => { e.preventDefault(); switchView('transactions'); });
+    if(navCategories) navCategories.addEventListener('click', (e) => { e.preventDefault(); switchView('categories'); });
+    if(navAnalytics) navAnalytics.addEventListener('click', (e) => { e.preventDefault(); switchView('analytics'); });
+    if(navSettings) navSettings.addEventListener('click', (e) => { e.preventDefault(); switchView('settings'); });
     if(viewAllBtn) viewAllBtn.addEventListener('click', (e) => { e.preventDefault(); switchView('transactions'); });
 
     // --- Clear Data Logic ---
@@ -93,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 transactions = []; 
                 localStorage.removeItem('smartTrackerData'); 
                 updateDashboard(); 
+                renderCategoryView(); // Refresh the categories page if open
             }
         });
     }
@@ -118,12 +149,10 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebarOverlay.classList.remove('show');
     }
 
-    // Close menu when tapping the dark overlay
     if(sidebarOverlay) {
         sidebarOverlay.addEventListener('click', closeMobileMenu);
     }
 
-    // Close menu automatically when clicking a navigation link on mobile
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
         item.addEventListener('click', () => {
@@ -148,11 +177,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const newTx = { id: Date.now(), title, category, amount, type, date: formattedDate };
 
-            transactions.unshift(newTx); // Add to top
+            transactions.unshift(newTx); 
             
             localStorage.setItem('smartTrackerData', JSON.stringify(transactions));
 
             updateDashboard();
+            renderCategoryView(); // Update progress bars if category page is open
             form.reset();
             modal.style.display = 'none';
         });
@@ -167,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateDashboard() {
         calculateSummaries();
         renderTransactionList();
-        renderAllTransactions(); // Update the full view list as well
+        renderAllTransactions(); 
         updateChartData();
     }
 
@@ -187,7 +217,6 @@ document.addEventListener('DOMContentLoaded', function() {
         txCountEl.innerText = transactions.length;
         chartTotalExpenseEl.innerText = `₹${expense.toLocaleString('en-IN')}`;
 
-        // --- NEW BUDGET LOGIC ---
         const monthlyBudget = 30000; 
         let spentPercentage = (expense / monthlyBudget) * 100;
         
@@ -204,7 +233,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Renders only the top 5 for the Dashboard
     function renderTransactionList() {
         if(!transactionListEl) return;
         transactionListEl.innerHTML = ''; 
@@ -242,7 +270,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Renders ALL transactions for the new view page
     function renderAllTransactions() {
         if(!allTransactionsListEl) return;
         allTransactionsListEl.innerHTML = ''; 
@@ -282,6 +309,50 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             allTransactionsListEl.insertAdjacentHTML('beforeend', txHTML);
         });
+    }
+
+    // --- NEW: Render Categories Progress Bars ---
+    function renderCategoryView() {
+        if(!categoryBreakdownListEl) return;
+        categoryBreakdownListEl.innerHTML = '';
+
+        const totals = getCategoryTotals();
+        let totalExpense = 0;
+        
+        // Find out total expenses
+        Object.values(totals).forEach(val => totalExpense += val);
+
+        if(totalExpense === 0) {
+            categoryBreakdownListEl.innerHTML = '<p style="text-align:center; color:var(--text-muted);">No expenses to show yet.</p>';
+            return;
+        }
+
+        // Loop through each category and build a progress bar
+        for (const [category, amount] of Object.entries(totals)) {
+            if(amount > 0) {
+                const percent = Math.round((amount / totalExpense) * 100);
+                
+                // Assign a color based on category
+                let barColor = '#a855f7'; // default purple
+                if(category === 'Food') barColor = '#22c55e';
+                if(category === 'Transport') barColor = '#3b82f6';
+                if(category === 'Shopping') barColor = '#eab308';
+                if(category === 'Entertainment') barColor = '#ef4444';
+
+                const html = `
+                    <div style="margin-bottom: 24px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <strong style="color: var(--text-main);">${category}</strong>
+                            <span style="color: var(--text-muted); font-weight: 500;">₹${amount.toLocaleString('en-IN')} (${percent}%)</span>
+                        </div>
+                        <div style="background:#e2e8f0; border-radius:10px; height:12px; width:100%; overflow: hidden;">
+                            <div style="background:${barColor}; height:100%; width:${percent}%; transition: width 0.5s ease;"></div>
+                        </div>
+                    </div>
+                `;
+                categoryBreakdownListEl.insertAdjacentHTML('beforeend', html);
+            }
+        }
     }
 
     function getCategoryTotals() {
