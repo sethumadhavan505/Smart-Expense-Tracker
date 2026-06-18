@@ -1,0 +1,37 @@
+<div id="transactionModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Transaction</h2>
+                <button id="closeModalBtn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="titleInput" placeholder="e.g., Coffee" required>
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="amountInput" placeholder="0" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="typeInput" required>
+                        <option value="expense">Expense</option>
+                        <option value="income">Income</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="categoryInput" required>
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Income">Income (Salary, Bonus)</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit-form">Save Transaction</button>
+            </form>
+        </div>
+    </div>
