@@ -53,10 +53,10 @@ body {
 }
 
 .main-logo {
-    height: 38px;
+    max-width: 100%;    /* Ensures the logo never overflows the sidebar width */
+    height: 30px;       /* Reduced from 38px to make it smaller */
     width: auto;
     object-fit: contain;
-    margin-left: -4px;
 }
 
 .sidebar-nav { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
