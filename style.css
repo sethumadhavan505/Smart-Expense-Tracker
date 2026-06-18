@@ -57,6 +57,7 @@ body {
     height: 30px;       /* Reduced from 38px to make it smaller */
     width: auto;
     object-fit: contain;
+    mix-blend-mode: screen;
 }
 
 .sidebar-nav { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
