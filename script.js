@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // --- Local Storage Initialization ---
+    // Load saved data from LocalStorage, or start with a completely empty tracker
     let transactions = JSON.parse(localStorage.getItem('smartTrackerData')) || [];
     let expenseChartInstance = null;
 
@@ -36,7 +37,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const headerTitle = document.querySelector('.header-titles h2');
     const headerSubtitle = document.querySelector('.header-titles p');
 
+    // Mobile Menu DOM Elements
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
     // --- Dark Mode Logic ---
+    // Check local storage to see if they left dark mode on previously
     if (localStorage.getItem('smartTrackerTheme') === 'dark') {
         document.body.classList.add('dark-theme');
         if(darkModeToggle) darkModeToggle.checked = true;
@@ -97,6 +104,34 @@ document.addEventListener('DOMContentLoaded', function() {
     if(openBtn) openBtn.addEventListener('click', () => modal.style.display = 'flex');
     if(closeBtn) closeBtn.addEventListener('click', () => modal.style.display = 'none');
     window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+    // --- Mobile Menu Logic ---
+    if(menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('show');
+        });
+    }
+
+    function closeMobileMenu() {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('show');
+    }
+
+    // Close menu when tapping the dark overlay
+    if(sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', closeMobileMenu);
+    }
+
+    // Close menu automatically when clicking a navigation link on mobile
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                closeMobileMenu();
+            }
+        });
+    });
 
     // Handle Form Submit
     if(form) {
