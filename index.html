@@ -159,7 +159,7 @@
                         <h3>Spending by Category</h3>
                     </div>
                     <div id="categoryBreakdownList" style="padding: 24px;">
-                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -176,28 +176,28 @@
                     <div class="card-header">
                         <h3>Application Preferences</h3>
                     </div>
-                    <form style="padding: 24px;">
+                    <form style="padding: 24px;" id="settingsForm">
                         <div class="form-group">
-                            <label>Monthly Budget Target (₹)</label>
-                            <input type="number" value="30000">
+                            <label>Monthly Budget Target</label>
+                            <input type="number" id="settingBudget" value="30000">
                         </div>
                         <div class="form-group">
                             <label>Preferred Currency</label>
-                            <select>
-                                <option>₹ Indian Rupee (INR)</option>
-                                <option>$ US Dollar (USD)</option>
-                                <option>€ Euro (EUR)</option>
+                            <select id="settingCurrency">
+                                <option value="₹">₹ Indian Rupee (INR)</option>
+                                <option value="$">$ US Dollar (USD)</option>
+                                <option value="€">€ Euro (EUR)</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Theme Preference</label>
-                            <select>
-                                <option>Match System</option>
-                                <option>Always Light</option>
-                                <option>Always Dark</option>
+                            <select id="settingTheme">
+                                <option value="system">Match System</option>
+                                <option value="light">Always Light</option>
+                                <option value="dark">Always Dark</option>
                             </select>
                         </div>
-                        <button type="button" class="btn-submit-form" onclick="alert('Settings saved successfully!')">Save Preferences</button>
+                        <button type="button" id="saveSettingsBtn" class="btn-submit-form">Save Preferences</button>
                     </form>
                 </div>
             </div>
@@ -217,7 +217,7 @@
                     <input type="text" id="titleInput" placeholder="e.g., Coffee" required>
                 </div>
                 <div class="form-group">
-                    <label>Amount (₹)</label>
+                    <label id="modalAmountLabel">Amount (₹)</label>
                     <input type="number" id="amountInput" placeholder="0" required min="1">
                 </div>
                 <div class="form-group">
