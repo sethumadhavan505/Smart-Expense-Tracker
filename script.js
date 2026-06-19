@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Local Storage Initialization ---
     let transactions = JSON.parse(localStorage.getItem('smartTrackerData')) || [];
     let expenseChartInstance = null;
+    let cashFlowChartInstance = null; // Added this line
 
     // --- User Settings Initialization ---
     const defaultSettings = { budget: 30000, currency: '₹', theme: 'system' };
@@ -151,6 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
             navAnalytics.classList.add('active');
             headerTitle.innerText = 'Analytics';
             headerSubtitle.innerText = 'Deep dive into your financial habits';
+            renderAnalytics(); // Re-render analytics on view switch
         } else if (view === 'settings') {
             settingsView.style.display = 'flex';
             navSettings.classList.add('active');
@@ -250,6 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderTransactionList();
         renderAllTransactions(); 
         updateChartData();
+        renderAnalytics(); // Added this new line!
     }
 
     function calculateSummaries() {
@@ -458,5 +461,69 @@ document.addEventListener('DOMContentLoaded', function() {
                 borderWidth: 0
             }]
         };
+    }
+
+    // --- NEW: Render Analytics Page ---
+    function renderAnalytics() {
+        const analyticsNetSavings = document.getElementById('analyticsNetSavings');
+        const analyticsTopCategory = document.getElementById('analyticsTopCategory');
+        if (!document.getElementById('cashFlowChart')) return;
+
+        let income = 0; let expense = 0;
+        const cur = userSettings.currency;
+
+        transactions.forEach(tx => {
+            if (tx.type === 'income') income += tx.amount;
+            if (tx.type === 'expense') expense += tx.amount;
+        });
+
+        // 1. Calculate Insights
+        const netSavings = income - expense;
+        if (analyticsNetSavings) {
+            analyticsNetSavings.innerText = `${cur}${netSavings.toLocaleString('en-IN')}`;
+            // Turn text red if savings are negative, green if positive
+            analyticsNetSavings.style.color = netSavings >= 0 ? '#22c55e' : '#ef4444'; 
+        }
+
+        // Find highest spend category
+        const totals = getCategoryTotals();
+        let topCat = '-';
+        let maxSpend = 0;
+        for (const [cat, amt] of Object.entries(totals)) {
+            if (amt > maxSpend) {
+                maxSpend = amt;
+                topCat = cat;
+            }
+        }
+        if (analyticsTopCategory) analyticsTopCategory.innerText = topCat;
+
+        // 2. Draw the Bar Chart
+        const ctx = document.getElementById('cashFlowChart').getContext('2d');
+        
+        if (cashFlowChartInstance) {
+            cashFlowChartInstance.data.datasets[0].data = [income, expense];
+            cashFlowChartInstance.update();
+        } else {
+            cashFlowChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Total Income', 'Total Expense'],
+                    datasets: [{
+                        label: 'Amount',
+                        data: [income, expense],
+                        backgroundColor: ['#22c55e', '#ef4444'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
     }
 });
