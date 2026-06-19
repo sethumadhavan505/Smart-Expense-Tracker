@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', function() {
     let transactions = JSON.parse(localStorage.getItem('smartTrackerData')) || [];
     let expenseChartInstance = null;
 
+    // --- User Settings Initialization ---
+    const defaultSettings = { budget: 30000, currency: '₹', theme: 'system' };
+    let userSettings = JSON.parse(localStorage.getItem('smartTrackerSettings')) || defaultSettings;
+
     // --- DOM Elements ---
     const modal = document.getElementById('transactionModal');
     const openBtn = document.getElementById('openModalBtn');
@@ -15,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalExpenseEl = document.querySelectorAll('.summary-card h3')[1];
     const balanceEl = document.querySelectorAll('.summary-card h3')[2];
     
-    // Budget DOM Elements
     const budgetAmountText = document.getElementById('budgetAmountText');
     const budgetProgressFill = document.getElementById('budgetProgressFill');
     const budgetProgressText = document.getElementById('budgetProgressText');
@@ -26,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const darkModeToggle = document.getElementById('darkModeCheckbox');
     const clearDataBtn = document.getElementById('clearDataBtn');
 
-    // NEW DOM Elements for View Switching
+    // View Switching Elements
     const dashboardView = document.getElementById('dashboardView');
     const transactionsView = document.getElementById('transactionsView');
     const categoriesView = document.getElementById('categoriesView');
@@ -50,31 +53,79 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.querySelector('.sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-    // --- Dark Mode Logic ---
-    if (localStorage.getItem('smartTrackerTheme') === 'dark') {
-        document.body.classList.add('dark-theme');
-        if(darkModeToggle) darkModeToggle.checked = true;
-    }
+    // Settings Form Elements
+    const settingBudget = document.getElementById('settingBudget');
+    const settingCurrency = document.getElementById('settingCurrency');
+    const settingTheme = document.getElementById('settingTheme');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    const modalAmountLabel = document.getElementById('modalAmountLabel');
 
-    if(darkModeToggle) {
-        darkModeToggle.addEventListener('change', () => {
-            if (darkModeToggle.checked) {
+    // --- Theme & Settings Logic ---
+    function applyTheme(themePref) {
+        if (themePref === 'dark') {
+            document.body.classList.add('dark-theme');
+            if(darkModeToggle) darkModeToggle.checked = true;
+        } else if (themePref === 'light') {
+            document.body.classList.remove('dark-theme');
+            if(darkModeToggle) darkModeToggle.checked = false;
+        } else if (themePref === 'system') {
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (prefersDark) {
                 document.body.classList.add('dark-theme');
-                localStorage.setItem('smartTrackerTheme', 'dark');
+                if(darkModeToggle) darkModeToggle.checked = true;
             } else {
                 document.body.classList.remove('dark-theme');
-                localStorage.setItem('smartTrackerTheme', 'light');
+                if(darkModeToggle) darkModeToggle.checked = false;
             }
+        }
+    }
+
+    // Apply saved theme immediately on load
+    applyTheme(userSettings.theme);
+
+    // Populate Settings form with saved data
+    if (settingBudget) settingBudget.value = userSettings.budget;
+    if (settingCurrency) settingCurrency.value = userSettings.currency;
+    if (settingTheme) settingTheme.value = userSettings.theme;
+    if (modalAmountLabel) modalAmountLabel.innerText = `Amount (${userSettings.currency})`;
+
+    // Header Dark Mode Toggle (Syncs with settings)
+    if(darkModeToggle) {
+        darkModeToggle.addEventListener('change', () => {
+            userSettings.theme = darkModeToggle.checked ? 'dark' : 'light';
+            localStorage.setItem('smartTrackerSettings', JSON.stringify(userSettings));
+            applyTheme(userSettings.theme);
+            if(settingTheme) settingTheme.value = userSettings.theme; // Update dropdown if settings page is open
+        });
+    }
+
+    // Settings Form "Save Preferences" Button
+    if(saveSettingsBtn) {
+        saveSettingsBtn.addEventListener('click', () => {
+            userSettings.budget = parseFloat(settingBudget.value) || 30000;
+            userSettings.currency = settingCurrency.value;
+            userSettings.theme = settingTheme.value;
+            
+            // Save to LocalStorage
+            localStorage.setItem('smartTrackerSettings', JSON.stringify(userSettings));
+            
+            // Apply new settings immediately
+            applyTheme(userSettings.theme);
+            if (modalAmountLabel) modalAmountLabel.innerText = `Amount (${userSettings.currency})`;
+            
+            // Re-render everything to show new currency & budget
+            updateDashboard();
+            renderCategoryView(); 
+            
+            alert("Settings saved successfully!");
         });
     }
 
     // --- View Switching Logic ---
     function switchView(view) {
-        // Hide all views
         const allViews = [dashboardView, transactionsView, categoriesView, analyticsView, settingsView];
         allViews.forEach(v => { if(v) v.style.display = 'none'; });
 
-        // Remove active class
         const allNavs = [navDashboard, navTransactions, navCategories, navAnalytics, navSettings];
         allNavs.forEach(n => { if(n) n.classList.remove('active'); });
 
@@ -123,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 transactions = []; 
                 localStorage.removeItem('smartTrackerData'); 
                 updateDashboard(); 
-                renderCategoryView(); // Refresh the categories page if open
+                renderCategoryView(); 
             }
         });
     }
@@ -182,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('smartTrackerData', JSON.stringify(transactions));
 
             updateDashboard();
-            renderCategoryView(); // Update progress bars if category page is open
+            renderCategoryView(); 
             form.reset();
             modal.style.display = 'none';
         });
@@ -210,20 +261,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         const balance = income - expense;
+        const cur = userSettings.currency; // Pull dynamic currency
 
-        totalIncomeEl.innerText = `₹${income.toLocaleString('en-IN')}`;
-        totalExpenseEl.innerText = `₹${expense.toLocaleString('en-IN')}`;
-        balanceEl.innerText = `₹${balance.toLocaleString('en-IN')}`;
+        totalIncomeEl.innerText = `${cur}${income.toLocaleString('en-IN')}`;
+        totalExpenseEl.innerText = `${cur}${expense.toLocaleString('en-IN')}`;
+        balanceEl.innerText = `${cur}${balance.toLocaleString('en-IN')}`;
         txCountEl.innerText = transactions.length;
-        chartTotalExpenseEl.innerText = `₹${expense.toLocaleString('en-IN')}`;
+        chartTotalExpenseEl.innerText = `${cur}${expense.toLocaleString('en-IN')}`;
 
-        const monthlyBudget = 30000; 
+        // Pull dynamic budget limit
+        const monthlyBudget = userSettings.budget; 
         let spentPercentage = (expense / monthlyBudget) * 100;
         
         if (spentPercentage > 100) spentPercentage = 100;
         
         if(budgetAmountText) {
-            budgetAmountText.innerText = `₹${expense.toLocaleString('en-IN')} / ₹${monthlyBudget.toLocaleString('en-IN')}`;
+            budgetAmountText.innerText = `${cur}${expense.toLocaleString('en-IN')} / ${cur}${monthlyBudget.toLocaleString('en-IN')}`;
         }
         if(budgetProgressFill) {
             budgetProgressFill.style.width = `${Math.round(spentPercentage)}%`;
@@ -237,6 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(!transactionListEl) return;
         transactionListEl.innerHTML = ''; 
         const recentTx = transactions.slice(0, 5); 
+        const cur = userSettings.currency;
 
         recentTx.forEach(tx => {
             const isIncome = tx.type === 'income';
@@ -261,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                     <div class="t-right ${colorClass}">
-                        <h4>${sign} ₹${tx.amount.toLocaleString('en-IN')}</h4>
+                        <h4>${sign} ${cur}${tx.amount.toLocaleString('en-IN')}</h4>
                         <p>${tx.date}</p>
                     </div>
                 </div>
@@ -273,6 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderAllTransactions() {
         if(!allTransactionsListEl) return;
         allTransactionsListEl.innerHTML = ''; 
+        const cur = userSettings.currency;
 
         if(transactions.length === 0) {
             allTransactionsListEl.innerHTML = '<p style="text-align:center; padding:20px; color:#64748b;">No transactions recorded yet.</p>';
@@ -302,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                     <div class="t-right ${colorClass}">
-                        <h4>${sign} ₹${tx.amount.toLocaleString('en-IN')}</h4>
+                        <h4>${sign} ${cur}${tx.amount.toLocaleString('en-IN')}</h4>
                         <p>${tx.date}</p>
                     </div>
                 </div>
@@ -311,15 +366,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- NEW: Render Categories Progress Bars ---
     function renderCategoryView() {
         if(!categoryBreakdownListEl) return;
         categoryBreakdownListEl.innerHTML = '';
 
         const totals = getCategoryTotals();
         let totalExpense = 0;
+        const cur = userSettings.currency;
         
-        // Find out total expenses
         Object.values(totals).forEach(val => totalExpense += val);
 
         if(totalExpense === 0) {
@@ -327,13 +381,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Loop through each category and build a progress bar
         for (const [category, amount] of Object.entries(totals)) {
             if(amount > 0) {
                 const percent = Math.round((amount / totalExpense) * 100);
                 
-                // Assign a color based on category
-                let barColor = '#a855f7'; // default purple
+                let barColor = '#a855f7'; 
                 if(category === 'Food') barColor = '#22c55e';
                 if(category === 'Transport') barColor = '#3b82f6';
                 if(category === 'Shopping') barColor = '#eab308';
@@ -343,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div style="margin-bottom: 24px;">
                         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                             <strong style="color: var(--text-main);">${category}</strong>
-                            <span style="color: var(--text-muted); font-weight: 500;">₹${amount.toLocaleString('en-IN')} (${percent}%)</span>
+                            <span style="color: var(--text-muted); font-weight: 500;">${cur}${amount.toLocaleString('en-IN')} (${percent}%)</span>
                         </div>
                         <div style="background:#e2e8f0; border-radius:10px; height:12px; width:100%; overflow: hidden;">
                             <div style="background:${barColor}; height:100%; width:${percent}%; transition: width 0.5s ease;"></div>
