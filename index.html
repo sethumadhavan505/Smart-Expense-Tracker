@@ -164,11 +164,33 @@
             </div>
 
             <div id="analyticsView" class="dashboard-grid" style="display: none;">
-                <div class="card" style="width: 100%; min-height: 500px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                    <i class="fa-solid fa-person-digging" style="font-size: 48px; color: var(--text-muted); margin-bottom: 16px;"></i>
-                    <h3 style="color: var(--text-muted);">Advanced Analytics</h3>
-                    <p style="color: var(--text-muted);">This feature is coming in a future update.</p>
+                
+                <div class="summary-cards" style="grid-column: 1 / -1;">
+                    <div class="card summary-card">
+                        <div class="icon-box bg-green-light"><i class="fa-solid fa-piggy-bank text-green"></i></div>
+                        <div class="card-info">
+                            <p class="label">Net Savings</p>
+                            <h3 id="analyticsNetSavings">₹0</h3>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="icon-box bg-red-light"><i class="fa-solid fa-fire text-red"></i></div>
+                        <div class="card-info">
+                            <p class="label">Highest Spend Area</p>
+                            <h3 id="analyticsTopCategory">-</h3>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="card chart-card" style="grid-column: 1 / -1;">
+                    <div class="card-header">
+                        <h3>Cash Flow (Income vs. Expense)</h3>
+                    </div>
+                    <div class="chart-container" style="height: 300px; padding: 20px;">
+                        <canvas id="cashFlowChart"></canvas>
+                    </div>
+                </div>
+
             </div>
 
             <div id="settingsView" class="dashboard-grid" style="display: none;">
