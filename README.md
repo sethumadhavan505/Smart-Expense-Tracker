@@ -22,30 +22,6 @@ A responsive and user-friendly Expense Tracker built using **HTML, CSS, and Java
 * JavaScript (ES6)
 * Browser Local Storage
 
-## 📂 Project Structure
-
-Smart-Expense-Tracker/
-
-├── index.html
-
-├── style.css
-
-├── script.js
-
-└── README.md
-
-## ⚙️ How to Run the Project
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/sethumadhavan505/Smart-Expense-Tracker.git
-```
-
-2. Open the project folder.
-
-3. Run `index.html` in your browser.
-
 ## 📸 Screenshots
 <img width="1536" height="1024" alt="screenshot" src="https://github.com/user-attachments/assets/110c63db-7f6f-4d45-8c28-4121a3da30db" />
 
