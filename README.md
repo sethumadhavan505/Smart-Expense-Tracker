@@ -74,7 +74,7 @@ git clone https://github.com/sethumadhavan505/Smart-Expense-Tracker.git
 
 GitHub: https://github.com/sethumadhavan505
 
-## 🪪 License
+## 📄 License
 
 This project was developed by **Sethu Madhavan P** for educational and learning purposes and is licensed under the **MIT License**. See the **LICENSE** file for more information.
 
