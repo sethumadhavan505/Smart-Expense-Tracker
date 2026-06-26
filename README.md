@@ -66,7 +66,7 @@ git clone https://github.com/sethumadhavan505/Smart-Expense-Tracker.git
 
 **SETHU MADHAVAN P**
 
-GitHub: @sethumadhavan505
+GitHub: https://github.com/sethumadhavan505
 
 ---
 
