@@ -2,6 +2,9 @@
 
 A responsive and user-friendly Expense Tracker built using **HTML, CSS, and JavaScript**. This application helps users manage their daily income and expenses, track their balance, and store transaction data using Local Storage.
 
+🔗 **Live Website:** https://sethumadhavan505.github.io/Smart-Expense-Tracker/
+
+
 ## 🚀 Features
 
 * Add Income and Expense Transactions
